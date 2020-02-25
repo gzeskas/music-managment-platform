@@ -6,9 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import reactor.core.publisher.Flux;
 
 @RestController
 @RequestMapping("/search/artist")
@@ -20,10 +18,10 @@ public class ArtistSearchController {
     }
 
     @GetMapping
-    public List<ExternalArtist> search(@RequestParam("term") String term) {
-        return artistSearchService.searchByTerm(term)
-                .map(ExternalArtist::map)
-                .collect(Collectors.toList());
+    public Flux<ExternalArtist> search(@RequestParam("term") String term,
+                                       @RequestParam(value = "limit", defaultValue = "5") int limit) {
+        return artistSearchService.searchByTerm(term, limit)
+                .map(ExternalArtist::map);
     }
 
 }

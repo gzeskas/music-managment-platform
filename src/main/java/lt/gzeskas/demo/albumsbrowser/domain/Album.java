@@ -1,10 +1,10 @@
 package lt.gzeskas.demo.albumsbrowser.domain;
 
-public class Artist {
+public class Album {
     private final long id;
     private final String name;
 
-    public Artist(long id, String name) {
+    public Album(long id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -17,3 +17,4 @@ public class Artist {
         return id;
     }
 }
+

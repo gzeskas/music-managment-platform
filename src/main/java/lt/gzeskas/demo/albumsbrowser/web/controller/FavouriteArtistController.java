@@ -1,8 +1,28 @@
 package lt.gzeskas.demo.albumsbrowser.web.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
+import lt.gzeskas.demo.albumsbrowser.domain.Artist;
+import lt.gzeskas.demo.albumsbrowser.services.FavouriteArtistService;
+import lt.gzeskas.demo.albumsbrowser.web.view.ExternalArtist;
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
-@RequestMapping("/settings/")
+@RestController
+@RequestMapping("/user/{userId}/settings/favourite/artist")
 public class FavouriteArtistController {
+    private final FavouriteArtistService favouriteArtistService;
 
+    public FavouriteArtistController(FavouriteArtistService favouriteArtistService) {
+        this.favouriteArtistService = favouriteArtistService;
+    }
+
+    @PutMapping
+    public Mono<ExternalArtist> save(@PathVariable("userId") long userId,
+                                     @RequestBody ExternalArtist externalArtist) {
+        return favouriteArtistService.save(userId, new Artist(externalArtist.getId(), externalArtist.getName()));
+    }
+
+    @GetMapping
+    public Mono<ExternalArtist> retrieve(@PathVariable("userId") long userId) {
+        return favouriteArtistService.findOne(userId);
+    }
 }
