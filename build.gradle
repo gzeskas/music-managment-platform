@@ -1,0 +1,61 @@
+plugins {
+	id 'org.springframework.boot' version '2.2.4.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+	id 'java'
+	id 'com.avast.gradle.docker-compose' version '0.9.5'
+}
+
+apply plugin: "docker-compose"
+
+group = 'lt.gzeskas.demo'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+	mavenCentral()
+}
+
+sourceSets {
+	integrationTest {
+		java {
+			srcDir file('src/test-integration/java')
+		}
+		resources.srcDir file('src/test-integration/resources')
+	}
+}
+
+configurations {
+	integrationTestCompile.extendsFrom testCompile
+	integrationTestRuntime.extendsFrom testRuntime
+}
+
+task integrationTest(type: Test) {
+	useJUnitPlatform()
+	testClassesDirs = sourceSets.integrationTest.output.classesDirs
+	classpath = sourceSets.integrationTest.runtimeClasspath
+	outputs.upToDateWhen { false }
+}
+
+dockerCompose {
+	isRequiredBy integrationTest
+}
+
+check.dependsOn integrationTest
+integrationTest.mustRunAfter test
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+	testImplementation 'io.projectreactor:reactor-test'
+
+	integrationTestImplementation('org.springframework.boot:spring-boot-starter-test') {
+    	exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+	integrationTestCompile("com.fasterxml.jackson.core:jackson-databind:2.10.2")
+}
+
+test {
+	useJUnitPlatform()
+}
