@@ -1,6 +1,7 @@
 package lt.gzeskas.demo.albumsbrowser;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lt.gzeskas.demo.albumsbrowser.payload.Artist;
 import lt.gzeskas.demo.albumsbrowser.responses.Album;
 import lt.gzeskas.demo.albumsbrowser.responses.ArtistSearchResponse;
 import org.junit.jupiter.api.Assertions;
@@ -61,6 +62,18 @@ public class AlbumsBrowserApplicationIntegrationTests {
 
     @Test
     void shouldBeAbleToSaveFavouriteArtist() throws Exception {
+        final long userId = 12323L;
+        var favouriteArtist = new Artist(23123L, "some name");
+        var request = HttpRequest.newBuilder()
+                .PUT(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(favouriteArtist)))
+                .uri(URI.create("http://localhost:8080/user/" + userId + "/settings/favourite/artist"))
+                .setHeader("Accept", "application/json")
+                .setHeader("Content-type", "application/json")
+                .build();
 
+        var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        Assertions.assertEquals(HTTP_OK, response.statusCode());
+        var savedArtist = objectMapper.readValue(response.body(), Artist.class);
+        Assertions.assertEquals(favouriteArtist, savedArtist);
     }
 }

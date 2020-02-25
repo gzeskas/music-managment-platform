@@ -12,12 +12,12 @@ public class UserSettingsService implements FavouriteArtistService {
     }
 
     @Override
-    public Mono<Artist> findOne(long userId) {
-        return null;
+    public Mono<Artist> findFavouriteArtist(long userId) {
+        return userSettingsRepository.getFavouriteArtist(userId);
     }
 
     @Override
-    public Mono<Artist> save(long userId, Artist artist) {
-        return null;
+    public Mono<Artist> saveFavouriteArtist(long userId, Artist artist) {
+        return userSettingsRepository.saveFavouriteArtist(userId, artist);
     }
 }

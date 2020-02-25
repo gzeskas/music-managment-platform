@@ -1,12 +1,16 @@
 package lt.gzeskas.demo.albumsbrowser.web.view;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lt.gzeskas.demo.albumsbrowser.domain.Artist;
 
 public class ExternalArtist {
     private final long id;
     private final String name;
 
-    public ExternalArtist(long id, String name) {
+    @JsonCreator
+    public ExternalArtist(@JsonProperty("id") long id,
+                          @JsonProperty("name") String name) {
         this.id = id;
         this.name = name;
     }

@@ -18,11 +18,12 @@ public class FavouriteArtistController {
     @PutMapping
     public Mono<ExternalArtist> save(@PathVariable("userId") long userId,
                                      @RequestBody ExternalArtist externalArtist) {
-        return favouriteArtistService.save(userId, new Artist(externalArtist.getId(), externalArtist.getName()));
+        return favouriteArtistService.saveFavouriteArtist(userId, new Artist(externalArtist.getId(), externalArtist.getName()))
+                .map(ExternalArtist::map);
     }
 
     @GetMapping
     public Mono<ExternalArtist> retrieve(@PathVariable("userId") long userId) {
-        return favouriteArtistService.findOne(userId);
+        return favouriteArtistService.findFavouriteArtist(userId).map(ExternalArtist::map);
     }
 }
