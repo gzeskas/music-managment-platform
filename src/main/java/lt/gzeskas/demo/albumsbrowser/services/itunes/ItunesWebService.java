@@ -42,6 +42,7 @@ public class ItunesWebService implements ArtistSearchService, AlbumsSearchServic
 
     @Override
     public Flux<Album> findTop5ByArtist(long artistAmgId) {
+        //TODO: URI template to const
         return webClient.method(HttpMethod.GET)
                 .uri("/lookup?amgArtistId={artistAmgId}&entity=album&limit=5", artistAmgId)
                 .retrieve()
