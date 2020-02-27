@@ -6,5 +6,5 @@ import reactor.core.publisher.Flux;
 import java.util.stream.Stream;
 
 public interface ArtistSearchService {
-    Flux<Artist> searchByTerm(String term, int limit);
+    Flux<Artist> searchByTerm(String term);
 }

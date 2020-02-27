@@ -1,8 +1,8 @@
-package lt.gzeskas.demo.albumsbrowser.services.itunes.response;
+package lt.gzeskas.demo.albumsbrowser.services.remote.clients.itunes.response;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lt.gzeskas.demo.albumsbrowser.services.itunes.response.entity.Entity;
+import lt.gzeskas.demo.albumsbrowser.services.remote.clients.itunes.response.entity.Entity;
 
 import java.util.List;
 

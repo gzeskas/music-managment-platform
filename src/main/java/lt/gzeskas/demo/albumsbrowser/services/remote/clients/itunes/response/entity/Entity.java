@@ -1,4 +1,4 @@
-package lt.gzeskas.demo.albumsbrowser.services.itunes.response.entity;
+package lt.gzeskas.demo.albumsbrowser.services.remote.clients.itunes.response.entity;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

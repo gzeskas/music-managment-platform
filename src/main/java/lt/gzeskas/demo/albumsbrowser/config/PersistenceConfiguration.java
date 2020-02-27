@@ -1,6 +1,7 @@
 package lt.gzeskas.demo.albumsbrowser.config;
 
 import org.jdbi.v3.core.Jdbi;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -8,9 +9,8 @@ import org.springframework.context.annotation.Configuration;
 public class PersistenceConfiguration {
 
     @Bean
-    public Jdbi jdbi() {
-        //TODO: move to properties
-       var jdbi = Jdbi.create("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1");
+    public Jdbi jdbi(@Value("${jdbc.connection}") String jdbc) {
+       var jdbi = Jdbi.create(jdbc);
         jdbi.useHandle(handle -> handle.execute(getInitialSqlCreateScript()));
        return jdbi;
     }

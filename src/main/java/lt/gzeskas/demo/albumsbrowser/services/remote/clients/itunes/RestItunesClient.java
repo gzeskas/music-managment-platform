@@ -1,14 +1,12 @@
-package lt.gzeskas.demo.albumsbrowser.services.itunes;
+package lt.gzeskas.demo.albumsbrowser.services.remote.clients.itunes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lt.gzeskas.demo.albumsbrowser.domain.Album;
 import lt.gzeskas.demo.albumsbrowser.domain.Artist;
-import lt.gzeskas.demo.albumsbrowser.services.AlbumsSearchService;
-import lt.gzeskas.demo.albumsbrowser.services.ArtistSearchService;
-import lt.gzeskas.demo.albumsbrowser.services.itunes.response.SearchResponse;
-import lt.gzeskas.demo.albumsbrowser.services.itunes.response.entity.WrapperType;
-import lt.gzeskas.demo.albumsbrowser.services.itunes.response.entity.AlbumEntity;
-import lt.gzeskas.demo.albumsbrowser.services.itunes.response.LookupResponse;
+import lt.gzeskas.demo.albumsbrowser.services.remote.clients.itunes.response.LookupResponse;
+import lt.gzeskas.demo.albumsbrowser.services.remote.clients.itunes.response.SearchResponse;
+import lt.gzeskas.demo.albumsbrowser.services.remote.clients.itunes.response.entity.AlbumEntity;
+import lt.gzeskas.demo.albumsbrowser.services.remote.clients.itunes.response.entity.WrapperType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
@@ -17,21 +15,25 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
-public class ItunesWebService implements ArtistSearchService, AlbumsSearchService {
-    private static final Logger logger = LoggerFactory.getLogger(ItunesWebService.class);
+public class RestItunesClient implements ItunesClient {
+    private static final Logger logger = LoggerFactory.getLogger(RestItunesClient.class);
+    private static final String SEARCH_ARTIST_BY_TERM_TEMPLATE = "/search?entity=allArtist&term={term}&limit=5";
+    private static final String FIND_TOP_5_ALBUMS_BY_ARTIST_TEMPLATE = "/lookup?amgArtistId={artistAmgId}&entity=album&limit=5";
     private final WebClient webClient;
     private final ObjectMapper objectMapper;
 
-    public ItunesWebService(WebClient webClient, ObjectMapper objectMapper) {
+    public RestItunesClient(WebClient webClient,
+                            ObjectMapper objectMapper) {
         this.webClient = webClient;
         this.objectMapper = objectMapper;
     }
 
     @Override
-    public Flux<Artist> searchByTerm(String term, int limit) {
+    public Flux<Artist> searchByTerm(String term, long limit) {
             return webClient.method(HttpMethod.GET)
-                    .uri("/search?entity=allArtist&term={term}&limit={limit}", term, limit)
+                    .uri(SEARCH_ARTIST_BY_TERM_TEMPLATE, term, limit)
                     .retrieve()
                     .bodyToMono(byte[].class)
                     .flatMap(bytes -> readValue(bytes, SearchResponse.class))
@@ -42,9 +44,8 @@ public class ItunesWebService implements ArtistSearchService, AlbumsSearchServic
 
     @Override
     public Flux<Album> findTop5ByArtist(long artistAmgId) {
-        //TODO: URI template to const
         return webClient.method(HttpMethod.GET)
-                .uri("/lookup?amgArtistId={artistAmgId}&entity=album&limit=5", artistAmgId)
+                .uri(FIND_TOP_5_ALBUMS_BY_ARTIST_TEMPLATE, artistAmgId)
                 .retrieve()
                 .bodyToMono(byte[].class)
                 .flatMap(bytes -> readValue(bytes, LookupResponse.class))
@@ -56,10 +57,12 @@ public class ItunesWebService implements ArtistSearchService, AlbumsSearchServic
     }
 
     private <T> Mono<T> readValue(byte[] body, Class<T> clazz) {
-        try {
-            return Mono.just(objectMapper.readValue(body, clazz));
-        } catch (IOException e) {
-            return Mono.error(e);
-        }
+        return Mono.fromCompletionStage(() -> CompletableFuture.supplyAsync(() -> {
+            try {
+                return objectMapper.readValue(body, clazz);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }));
     }
 }
