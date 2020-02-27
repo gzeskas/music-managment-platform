@@ -41,6 +41,7 @@ public class CachingAlbumSearchService implements AlbumsSearchService {
         return delegate.findTop5ByArtist(artistAmgId);
     }
 
+    //TODO: Scheduler to config
     @Scheduled(fixedDelay = 1000L * 3600L) //every hour
     public void tryExecutePendingRequest() {
         requestCounter.getAndSet(0L);

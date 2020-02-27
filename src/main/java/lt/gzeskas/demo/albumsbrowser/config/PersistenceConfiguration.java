@@ -9,6 +9,7 @@ public class PersistenceConfiguration {
 
     @Bean
     public Jdbi jdbi() {
+        //TODO: move to properties
        var jdbi = Jdbi.create("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1");
         jdbi.useHandle(handle -> handle.execute(getInitialSqlCreateScript()));
        return jdbi;

@@ -20,6 +20,7 @@ public class ArtistSearchController {
     @GetMapping
     public Flux<ExternalArtist> search(@RequestParam("term") String term,
                                        @RequestParam(value = "limit", defaultValue = "5") int limit) {
+        //TODO: validation ?
         return artistSearchService.searchByTerm(term, limit)
                 .map(ExternalArtist::map);
     }
