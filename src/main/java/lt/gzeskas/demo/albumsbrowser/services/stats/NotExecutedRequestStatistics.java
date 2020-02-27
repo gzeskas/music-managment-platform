@@ -8,9 +8,9 @@ import java.util.stream.Collectors;
 public class NotExecutedRequestStatistics {
     private final Map<Key, Long> statsByArtist = new ConcurrentHashMap<>();
 
-    public void add(Key identity) {
-        statsByArtist.putIfAbsent(identity, 0L);
-        statsByArtist.computeIfPresent(identity, (key, value) ->  ++value);
+    public void add(Key key) {
+        statsByArtist.putIfAbsent(key, 0L);
+        statsByArtist.computeIfPresent(key, (k, value) ->  ++value);
     }
 
     public List<Key> getMostPopularNotExecutedRequests(long limit) {

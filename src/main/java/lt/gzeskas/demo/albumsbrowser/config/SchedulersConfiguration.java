@@ -13,8 +13,6 @@ import java.util.List;
 
 @Configuration
 public class SchedulersConfiguration {
-    private static final Logger logger = LoggerFactory.getLogger(SchedulersConfiguration.class);
-
     private final NotExecutedRequestStatistics statisticService;
     private final AlbumsSearchService albumsSearchService;
     private final ArtistSearchService artistSearchService;
@@ -31,8 +29,7 @@ public class SchedulersConfiguration {
     }
 
     @Scheduled(cron = "0 0,59 * ? * * *") //at the end of every hour.
-    public void fetchMostPopularArtistsTop5Albums() {
-        logger.info("Executing scheduled task: fetchMostPopularArtistsTop5Albums");
+    public void updateMostPopularNotResolvedRequests() {
         List<Key> mostPopularKeys = statisticService.getMostPopularNotExecutedRequests(itunesRequestRateLimiter.reset());
         mostPopularKeys.forEach(
                 identity -> {
